@@ -1,159 +1,94 @@
 
-class Node(object):
-    def __init__(self, start, end):
-        self.start = start
-        self.end = end
-        self.par =0
-        self.imp =0
-        self.sum = 0
-        self.left = None
-        self.right = None
+def createTree(i, l, r,A):
+
+    if l == r:
+        tree[i] = A[l] % 2
+        return
+    else:
+        mid = (l + r) // 2
+        createTree(i*2, l, mid, A)
+        createTree((i*2)+1, mid+1, r, A)
+        tree[i] = comp(tree[i*2], tree[(i*2)+1])
+
+def update(i,l,r, pos,val):
+
+    if(l > pos or r < pos):
+        return
+    if l == r:
+        tree[i] = val % 2
+    else:
+        mid = (l + r) // 2
+        update(i * 2, l, mid, pos, val)
+        update((i * 2) + 1, mid + 1, r, pos, val)
+        tree[i] = comp(tree[i * 2], tree[(i * 2) + 1])
 
 
-class segmentTree(object):
-    def __init__(self, vector):
-       # print("----",nums)
+def sumRange(i,l,r,L,R):
 
-        def createTree(vector, left, rigth):
-            #print(l,r)
-            if left > rigth:
-                return None
+    if (R < l or L > r):
+        #return 1
+        return 0
+    elif (l >= L and r <= R):
+        return tree[i]
+    mid = (l+r) // 2
+    return comp(sumRange((i*2),l,mid,L,R) , sumRange((i*2)+1,mid+1,r,L,R))
 
-            if left == rigth:
-                n = Node(left, rigth)
-                if vector[left]% 2 == 0:
-                    n.par = 1
-                else:
-                    n.imp = 1
-                n.sum = vector[left]
-                return n
 
-            mid = (left + rigth) // 2
+def comp(a,b):
+    return a + b
 
-            st = Node(left, rigth)
-            st.left = createTree(vector, left, mid)
-            st.right = createTree(vector, mid +1, rigth)
+def queryOder(l,r):
+    return sumRange(1,0,len(A)-1,l,r)
 
-            st.sum = st.left.sum + st.right.sum
-            st.par = st.left.par + st.right.par
-            st.imp = st.left.imp + st.right.imp
-            return st
+def queryP(l,r):
+    return(r - l + 1) - queryOder(l,r)
 
-        self.st = createTree(vector, 0, len(vector) -1)
 
-    def update(self, current, val):
-
-        def updateVal(st, current, val):
-            p = 1
-            i = 1
-            if st.start == st.end:
-                #print(st.start,st.end)
-                if val % 2 == 0:
-                    print(val)
-                    st.par += p
-                    st.sum = val
-                else:
-                    st.imp += i
-                    st.sum = val
-
-                return st.par,st.imp,st.sum
-            mid = (st.start + st.end) // 2
-
-            if current <= mid:
-                updateVal(st.left,current, val)
-            else:
-                updateVal(st.right, current, val)
-            st.sum = st.left.sum + st.right.sum
-            st.par = st.left.par + st.right.par
-            st.imp = st.left.imp + st.right.imp
-            return st.par
-
-        return updateVal(self.st, current, val)
-
-    def sumRangep(self, i, j):
-
-        def rangeSump(st, i, j):
-
-            if st.start == i and st.end == j:
-                #print(st.par,st.imp)
-                return st.par
-
-            mid = (st.start + st.end) // 2
-
-            if j <= mid:
-                return rangeSump(st.left, i, j)
-
-            elif i >= mid + 1:
-                return rangeSump(st.right, i, j)
-
-            else:
-                return rangeSump(st.left, i, mid) + rangeSump(st.right, mid +1, j)
-
-        return rangeSump(self.st, i, j)
-
-    def sumRangei(self, i, j):
-
-        def rangeSumi(st, i, j):
-
-            if st.start == i and st.end == j:
-                #print(st.par,st.imp)
-                return st.imp
-
-            mid = (st.start + st.end) // 2
-
-            if j <= mid:
-                return rangeSumi(st.left, i, j)
-
-            elif i >= mid + 1:
-                return rangeSumi(st.right, i, j)
-
-            else:
-                return rangeSumi(st.left, i, mid) + rangeSumi(st.right, mid +1, j)
-
-        return rangeSumi(self.st, i, j)
+#
+# createTree(1,0,len(A)-1, A)
+# print(tree)
+#
+# # update(1,0,len(A)-1,1,4)
+# # print(tree)
+# #print(sumRange(1,0,len(A)-1,1,2))
+#
+#
+#
+# print(queryP(1,3))
+#
+# print(queryOder(1,3))
 
 
 
+n = int(input())
 
-#n = int(input())
-#A = input()
-#A = A.split(' ')
+A = list(map(int, input().split()))
 
-#for i, e in enumerate(A):
-#    A[i] = int(e)
-#print(A)
-#q = int(input())
+n = len(A)
+tree =[0 for i in range(4*n)]
 
-#R = []
+createTree(1,0,len(A)-1, A)
 
-#for i in range(q):
-#    R.append((input()).split())
-#print(R)
+q = int(input())
 
-
-n = 6
-A = [1,2,3,4,5,6]
-q = 4
-R = [[1,2,5],[2,1,4],[0,5,4],[1,1,6]]
-
-tree = segmentTree(A)
-
+R = []
 
 for i in range(q):
-    if(int(R[i][0]) == 1):
-        if int(R[i][2]) == A[len(A)-1]:
+   R.append((input()).split())
 
-            print(tree.sumRangep(int(R[i][1]),int(R[i][2])-1))
-        #print(tree.st.par)
-        else:
-            print(tree.sumRangep(int(R[i][1]), int(R[i][2])))
+i = 1
+for i in range(q):
+    if(int(R[i][0]) == 1):
+        l = int(R[i][1])-1
+        r = int(R[i][2])-1
+        print(queryP(l,r))
+
     elif(int(R[i][0]) == 2):
-        if int(R[i][2]) == A[len(A) - 1]:
-            print(tree.sumRangei(int(R[i][1]), int(R[i][2]) - 1))
-        else:
-            print(tree.sumRangei(int(R[i][1]), int(R[i][2])))
+        l = int(R[i][1])-1
+        r = int(R[i][2])-1
+        print(queryOder(l,r))
 
     elif(int(R[i][0]) == 0):
-       # print(R[i][1],A[(R[i][2])])
-        tree.update(int(R[i][1]), int(R[i][2]))
-        #print(A)
+        l = int(R[i][1])-1
+        r = int(R[i][2])
+        update(1,0,len(A)-1,l,r)
