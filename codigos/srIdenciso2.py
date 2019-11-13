@@ -1,175 +1,118 @@
+def createTree(i, l, r,A):
 
-
-class Node(object):
-    def __init__(self, start, end):
-        self.start = start
-        self.end = end
-        self.sum = 0
-        self.left = None
-        self.right = None
-
-
-class segmentTree(object):
-    def __init__(self, vector):
-       # print("----",nums)
-
-        def createTree(vector, left, rigth):
-            #print(l,r)
-            if left > rigth:
-                return None
-
-            if left == rigth:
-                n = Node(left, rigth)
-                n.sum = vector[left]
-                return n
-
-            mid = (left + rigth) // 2
-
-            st = Node(left, rigth)
-            st.left = createTree(vector, left, mid)
-            st.right = createTree(vector, mid +1, rigth)
-
-            st.sum = st.left.sum + st.right.sum
-
-            return st
-
-        self.st = createTree(vector, 0, len(vector) -1)
-
-    def update(self, current, val):
-
-        def updateVal(st, current, val):
-
-            if st.start == st.end:
-                st.sum = val
-                return val
-            mid = (st.start + st.end) // 2
-
-            if current <= mid:
-                updateVal(st.left,current, val)
-            else:
-                updateVal(st.right, current, val)
-            st.sum = st.left.sum + st.right.sum
-            return st.sum
-
-        return updateVal(self.st, current, val)
-
-    def sumRange(self, i, j):
-
-        def rangeSum(st, i, j):
-
-            if st.start == i and st.end == j:
-                return st.sum
-
-            mid = (st.start + st.end) // 2
-
-            if j <= mid:
-                return rangeSum(st.left, i, j)
-
-            elif i >= mid + 1:
-                return rangeSum(st.right, i, j)
-
-            else:
-                return rangeSum(st.left, i, mid) + rangeSum(st.right, mid +1, j)
-
-        return rangeSum(self.st, i, j)
-
-
-def merge(A,aux,mid, start, end):
-    left = start
-    left_end = mid
-    rigth = left_end + 1
-    rigth_end = end
-
-    possicao = start
-
-    while left <= left_end or rigth <= rigth_end:
-        if left > left_end:
-            aux[possicao]=A[rigth]
-            rigth += 1
-            possicao += 1
-
-        elif rigth > rigth_end:
-            aux[possicao]=A[left]
-            left += 1
-            possicao += 1
-
-        elif A[left] < A[rigth]:
-            aux[possicao] = A[left]
-            left += 1
-            possicao += 1
-
-        else:
-            aux[possicao] = A[rigth]
-            rigth += 1
-            possicao += 1
-
-    for j in range(start, end +1):
-        A[j]= aux[j]
-
-def mergesort(A, aux, start, end):
-    if end <= start:
+    if l == r:
+        tree[i] = A[l]
         return
-    meio = (start+ end) // 2
+    else:
+        mid = (l + r) // 2
+        createTree(i*2, l, mid, A)
+        createTree((i*2)+1, mid+1, r, A)
+        tree[i] = comp(tree[i*2], tree[(i*2)+1])
 
-    mergesort(A, aux, start, meio)
+def update(i,l,r, pos,val):
 
-    mergesort(A, aux, meio + 1, end)
+    if(l > pos or r < pos):
+        return
+    if l == r:
+        tree[i] = val
+    else:
+        mid = (l + r) // 2
 
-    merge(A, aux, meio, start,  end)
+        update((i * 2), l, mid, pos, val)
+        update((i * 2) + 1, mid + 1, r, pos, val)
+
+        tree[i] = comp(tree[i * 2], tree[(i * 2) + 1])
+
+
+def sumRange(i,l,r,L,R):
+
+    if (R < l or L > r):
+        #return 1
+        return 0
+    elif (l >= L and r <= R):
+        return tree[i]
+    mid = (l+r) // 2
+    return comp(sumRange((i*2),l,mid,L,R) , sumRange((i*2)+1,mid+1,r,L,R))
 
 
 
-# n = int(input())
-# A = input()
-# A = A.split(' ')
-#
-# for i, e in enumerate(A):
-#     A[i] = int(e)
-# #print(A)
-# q = int(input())
-#
-# R = []
-#
-# for i in range(q):
-#     R.append((input()).split())
-# tree = segmentTree(A)
 
+
+def createTree2(i, l, r,A):
+
+    if l == r:
+        tree2[i] = A[l]
+        return
+    else:
+        mid = (l + r) // 2
+        createTree2(i*2, l, mid, A)
+        createTree2((i*2)+1, mid+1, r, A)
+        tree2[i] = min(tree2[i*2], tree2[(i*2)+1])
+
+def update2(i,l,r, pos,val):
+
+    if(l > pos or r < pos):
+        return
+    if l == r:
+        tree2[i] = val
+    else:
+        mid = (l + r) // 2
+        update2(i * 2, l, mid, pos, val)
+        update2((i * 2) + 1, mid + 1, r, pos, val)
+        tree2[i] = min(tree2[i * 2], tree2[(i * 2) + 1])
+
+
+def sumRange2(i,l,r,L,R):
+
+    if (R < l or L > r):
+        #return 1
+        return 0
+    elif (l >= L and r <= R):
+       # print(tree[i])
+        return tree2[i]
+    mid = (l+r) // 2
+    return min(sumRange2((i*2),l,mid,L,R) , sumRange2((i*2)+1,mid+1,r,L,R))
+
+
+def queryMin(a,b):
+    return sumRange2(1,0,len(A)-1,a,b)
+
+def sm(a,b):
+    return sumRange(1, 0, len(A) - 1, a, b)
+
+def comp(a,b):
+   return a + b
 
 n = 8
-A = [1,5,6,7,1,2,3,4]
+
+A = [1, 5, 6, 7, 1, 2, 3, 4]
+
+n = len(A)
+tree =[0 for i in range(4*n)]
+tree2 =[0 for i in range(4*n)]
+
+createTree(1, 0,len(A)-1, A)
+createTree2(1,0,len(A)-1, A)
+print(tree)
+print(tree2)
+
 q = 5
-R = [["Q","0","7"],["Q","0","4"],["U","1","-10"],["Q","1","2"],["Q","1","7"]]
-#print(R)
-#print(R[0][1])
+R = [["Q", "0", "7"],["Q", "0", "4"],["U","1", "-10"],["Q", "1", "2",],["Q", "1", "7"]]
+#print(sumRange(1,0,len(A)-1,1-1,3))
+#update(0,0,len(A)-1,1,3)
+#print(sumRange(1,0,len(A)-1,1-1,3))
 
-
-tree = segmentTree(A)
-
-
-def min_value(aux):
-    aux2 = []
-    for i in range(len(aux)):
-        aux2.append(0)
-
-    mergesort(aux,aux2,0,len(aux)-1)
 
 
 
 for i in range(q):
     if(R[i][0] == "Q"):
-
-        x= int(R[i][1])
-        y = int(R[i][2]) + 1
-        aux = A[x:y]
-        min_value(aux)
-
-        print(tree.sumRange(int(R[i][1]), int(R[i][2])),aux[0])
+        l = int(R[i][1])-1
+        r = int(R[i][2])-1
+        print(sm(int(R[i][1]),int(R[i][2])), queryMin(int(R[i][1]),int(R[i][2])))
 
     elif(R[i][0] == "U"):
-
-        aux = int(R[i][2])
-        A[int(R[i][1])] = aux
-
-        tree.update(int(R[i][1]), int(R[i][2]))
-
-
+        l = int(R[i][1]) - 1
+        r = int(R[i][2])
+        update(1, 0, len(A) - 1, int(R[i][1]), r)
+        update2(1, 0, len(A) - 1, int(R[i][1]), r)
