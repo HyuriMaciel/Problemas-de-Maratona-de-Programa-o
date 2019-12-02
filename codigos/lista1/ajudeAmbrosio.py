@@ -1,4 +1,3 @@
-
 def createTree(i, l, r,A):
 
     if l == r:
@@ -79,13 +78,13 @@ for i in range(q):
 i = 1
 for i in range(q):
     if(int(R[i][0]) == 1):
-        l = int(R[i][1])-1
-        r = int(R[i][2])-1
+        l = int(R[i][1]) - 1
+        r = int(R[i][2]) - 1
         print(queryP(l,r))
 
     elif(int(R[i][0]) == 2):
-        l = int(R[i][1])-1
-        r = int(R[i][2])-1
+        l = int(R[i][1]) - 1
+        r = int(R[i][2]) - 1
         print(queryOder(l,r))
 
     elif(int(R[i][0]) == 0):
